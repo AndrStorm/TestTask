@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -6,11 +7,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float decelerationDist = 1f;
     [SerializeField] private Transform target;
     [SerializeField] private Transform[] obstacles;
+    public Material cubeColideMat;
     
     
-    [HideInInspector]public bool controlVelocity = true;
+    [NonSerialized]public bool controlVelocity = true;
+    
+#if UNITY_EDITOR
+    
     public  bool debugmode = true;
-
+    
+#endif
+    
     
     private Rigidbody[] _rb;
     
@@ -22,7 +29,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null)
         {
-            Instance = this as GameManager;
+            Instance = this;
         }
         
         _rb = new Rigidbody[obstacles.Length];
@@ -48,7 +55,7 @@ public class GameManager : MonoBehaviour
             
             if (forceDir.magnitude >= decelerationDist)
             {
-                _rb[i].velocity += accelerationMult * Time.deltaTime * forceDir.normalized;
+                _rb[i].velocity += accelerationMult * Time.fixedDeltaTime * forceDir.normalized;
             }
             else
             {

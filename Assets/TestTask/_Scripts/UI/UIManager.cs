@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +10,8 @@ public class UIManager : MonoBehaviour
     
     private float _valTimer = 0f;
     private int _valImpactCounter = 0;
-    private string _strDefault ="0";
+    private const string _strDefault ="0";
+    private readonly WaitForSeconds secDelay = new WaitForSeconds(1f);
 
     
     public static UIManager Instance;
@@ -24,18 +24,12 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         if(Instance==null)
-            Instance=this as UIManager;
+            Instance=this;
     }
 
     private void Start()
     {
         StartCoroutine(SimpleTimer());
-    }
-
-    
-    void Update()
-    {
-        _valTimer += Time.deltaTime;
     }
 
     
@@ -62,7 +56,8 @@ public class UIManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(1f);
+            yield return secDelay;
+            _valTimer += 1f;
             textTimer.text = Mathf.FloorToInt(_valTimer).ToString();
         }
     }

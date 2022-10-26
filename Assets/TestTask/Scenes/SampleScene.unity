@@ -496,7 +496,6 @@ GameObject:
   - component: {fileID: 808929586}
   - component: {fileID: 808929585}
   - component: {fileID: 808929584}
-  - component: {fileID: 808929587}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -568,9 +567,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 808929587}
-        m_TargetAssemblyTypeName: ResetCounters, Assembly-CSharp
-        m_MethodName: ResetGameCounters
+      - m_Target: {fileID: 602967901}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: ResetTimer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -618,18 +617,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 808929582}
   m_CullTransparentMesh: 1
---- !u!114 &808929587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 808929582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c422fee22d3e4448817e797f3eba6e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &822586565
 GameObject:
   m_ObjectHideFlags: 0
@@ -1057,7 +1044,7 @@ MonoBehaviour:
   obstacles:
   - {fileID: 170248942788518351}
   - {fileID: 107680073}
-  controlVelocity: 1
+  cubeColideMat: {fileID: 2100000, guid: 5b0ad21327a8b10468976fbd5415720f, type: 2}
   debugmode: 0
 --- !u!1 &1524401135
 GameObject:
