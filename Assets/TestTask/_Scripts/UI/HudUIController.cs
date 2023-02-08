@@ -57,6 +57,7 @@ public class HudUIController
     {
         _timer = 0f;
         _delayTimer = 0f;
+        _impactsCounter = 0;
         _hudUI.ResetTmerAndCounter();
     }
     
