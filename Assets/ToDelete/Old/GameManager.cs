@@ -10,12 +10,10 @@ public class GameManager : MonoBehaviour
     public Material cubeColideMat;
     
     
-    [NonSerialized]public bool controlVelocity = true;
+    [NonSerialized]public bool isControlVelocity = true;
     
 #if UNITY_EDITOR
-    
     public  bool debugmode = true;
-    
 #endif
     
     
@@ -43,12 +41,15 @@ public class GameManager : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if (!controlVelocity)
-        {
-            return;
-        }
+        if (!isControlVelocity) return;
+       
         
-        
+        ApplyGravity();
+    }
+    
+
+    private void ApplyGravity()
+    {
         for (int i = 0; i < obstacles.Length; i++)
         {
             Vector3 forceDir = target.position - obstacles[i].position;
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    
 
     
     public Transform GetTargetTransform()
