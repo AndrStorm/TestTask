@@ -11,8 +11,7 @@ public class GravityObject : MonoBehaviour
     public Rigidbody Rb => _rb;
 
 
-    private List<Transform> _recentlyCilidedObjects;
-    
+    private List<Transform> _recentlyColidedStructures;
     private WaitForSeconds _recentlyColidedDelay;
     private WaitForSeconds _structureColidedDelay;
     private WaitForSeconds _antigravityDuration;
@@ -23,12 +22,12 @@ public class GravityObject : MonoBehaviour
     private bool _isRecentlyColide;
 
     
-    public static event Action<GravityObject, bool> OnAntigravityRequested;
+    public event Action<GravityObject, bool> OnAntigravityRequested;
     public static event Action OnStructureColided;
 
     private void Start()
     {
-        _recentlyCilidedObjects = new List<Transform>();
+        _recentlyColidedStructures = new List<Transform>();
         _recentlyColidedDelay = new WaitForSeconds(_collisionSettings.recentlyColidedDelay);
         _structureColidedDelay = new WaitForSeconds(_collisionSettings.structureColidedDelay);
         _antigravityDuration =  new WaitForSeconds(_collisionSettings.antigravitydDuration);
@@ -45,7 +44,7 @@ public class GravityObject : MonoBehaviour
         if (obj != null) isGravityObject = true;
 
         if (!isGravityObject) return;
-        RegisterCollision(collision);
+        RegisterStructureCollision(collision);
         if (_isRecentlyColide) return;
         HandleCollision(collision);
         
@@ -57,35 +56,31 @@ public class GravityObject : MonoBehaviour
 #endif
         
     }
-
     
     
-    private void RegisterCollision(Collision collision)
+    private void RegisterStructureCollision(Collision collision)
     {
-        foreach (var obj in _recentlyCilidedObjects)
+        foreach (var currentTransform in _recentlyColidedStructures)
         {
-            if (collision.transform == obj) return;
+            if (collision.transform == currentTransform) return;
         }
-        StartCoroutine(RegisterCollisionCoroutine(collision));
+        StartCoroutine(RegisterStructureCollisionCoroutine(collision));
     }
     
-    private IEnumerator RegisterCollisionCoroutine(Collision collision)
+    private IEnumerator RegisterStructureCollisionCoroutine(Collision collision)
     {
-        var colTransdorm = collision.transform;
-        _recentlyCilidedObjects.Add(colTransdorm);
+        var collisionTransform = collision.transform;
+        _recentlyColidedStructures.Add(collisionTransform);
         OnStructureColided!.Invoke();
         yield return _structureColidedDelay;
-        _recentlyCilidedObjects.Remove(colTransdorm);
+        _recentlyColidedStructures.Remove(collisionTransform);
     }
-    
-    
-    
+
     private void HandleCollision(Collision collision)
     {
         StartCoroutine(RecentlyColideDelayCoroutine());
-        StartCoroutine(AntigravityCoroutine());
+        StartCoroutine(RequestAntigravityCoroutine());
 
-        
         GameObject cubeColision = collision.GetContact(collision.contacts.Length - 1).otherCollider.gameObject;
         MeshRenderer cubeMR = cubeColision.GetComponent<MeshRenderer>();
         cubeMR.material = _collisionMaterial;
@@ -102,14 +97,12 @@ public class GravityObject : MonoBehaviour
         _isRecentlyColide = false;
     }
     
-    private IEnumerator AntigravityCoroutine()
+    private IEnumerator RequestAntigravityCoroutine()
     {
         OnAntigravityRequested?.Invoke(this, true);
         yield return _antigravityDuration;
         OnAntigravityRequested?.Invoke(this, false);
     }
-    
-    
     
     
 #if UNITY_EDITOR

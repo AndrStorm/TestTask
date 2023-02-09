@@ -3,61 +3,79 @@ using UnityEngine;
 
 public class GravityController
 {
-    private readonly List<Rigidbody> _gravityObjectsRbs;
+    private readonly List<GravityObject> _gravityObjectsRbs;
     private readonly Transform _targetTransform;
     private readonly float _decelerationDist;
     private readonly  float _accelerationMult;
     
-    private List<Rigidbody> _antigravityRbs;
     
     public GravityController(GravitySettings gravitySettings)
     {
-        _gravityObjectsRbs = new List<Rigidbody>();
-        _antigravityRbs = new List<Rigidbody>();
+        _gravityObjectsRbs = new List<GravityObject>();
         _targetTransform = gravitySettings.target.transform;
         _decelerationDist = gravitySettings.decelerationDist;
         _accelerationMult = gravitySettings.accelerationMult;
     }
 
-    public void OnTick()
+    public void DeInit()
+    {
+        foreach (var gravityObject in _gravityObjectsRbs)
+        {
+            gravityObject.OnAntigravityRequested -= OnGravityObjectAntigravityRequested;
+        }
+    }
+
+    public void OnFixedTick()
     {
         ApplyGravity();
     }
+    
+    
+    public void AddGravityObject(GravityObject gravityObject)
+    {
+        ActivateGravity(gravityObject);
+        gravityObject.OnAntigravityRequested += OnGravityObjectAntigravityRequested;
+    }
+    
 
     private void ApplyGravity()
     {
-        foreach (var gravityObjectsRb in _gravityObjectsRbs)
+        foreach (var gravityObject in _gravityObjectsRbs)
         {
-            Vector3 forceDir = _targetTransform.position - gravityObjectsRb.position;
+            Vector3 forceDir = _targetTransform.position - gravityObject.Rb.position;
             
             if (forceDir.magnitude >= _decelerationDist)
             {
-                gravityObjectsRb.velocity += _accelerationMult * Time.fixedDeltaTime * forceDir.normalized;
+                gravityObject.Rb.velocity += _accelerationMult * Time.fixedDeltaTime * forceDir.normalized;
             }
             else
             {
-                gravityObjectsRb.velocity *= Mathf.Clamp01(forceDir.magnitude / _decelerationDist);
+                gravityObject.Rb.velocity *= Mathf.Clamp01(forceDir.magnitude / _decelerationDist);
             }
         }
     }
 
-    public void DeactivateGravity(GravityObject gravityObject)
+    private void DeactivateGravity(GravityObject gravityObject)
     {
-        var rb = gravityObject.Rb;
-        _gravityObjectsRbs.Remove(rb);
-        _antigravityRbs.Add(rb);
+        _gravityObjectsRbs.Remove(gravityObject);
     }
 
-    public void ActivateGravity(GravityObject gravityObject)
+    private void ActivateGravity(GravityObject gravityObject)
     {
-        var rb = gravityObject.Rb;
-        _gravityObjectsRbs.Add(rb);
-        _antigravityRbs.Remove(rb);
+        _gravityObjectsRbs.Add(gravityObject);
     }
-
-    public void AddGravityObject(GravityObject gravityObject)
+    
+    
+    private void OnGravityObjectAntigravityRequested(GravityObject gravityObject, bool isColide)
     {
-        _gravityObjectsRbs.Add(gravityObject.Rb);
+        if (isColide)
+        {
+            DeactivateGravity(gravityObject);
+        }
+        else
+        {
+            ActivateGravity(gravityObject);
+        }
     }
     
 }

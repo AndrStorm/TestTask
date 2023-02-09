@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Initializer : MonoBehaviour
 {
     [SerializeField] private HudUI _hudUI;
+    [SerializeField] private List<GravityObject> _sceneGravityObjects;
     [SerializeField] private GameSettings _gameSettings;
 
 
@@ -21,14 +23,19 @@ public class Initializer : MonoBehaviour
 
     private void OnDestroy()
     {
-        _gameController.DeInit();
+        //_gameController.DeInit();
+        _gravityController.DeInit();
         _hudUIController.DeInit();
     }
 
     void Update()
     {
-        _gravityController.OnTick();
         _hudUIController.OnTick();
+    }
+
+    private void FixedUpdate()
+    {
+        _gravityController.OnFixedTick();
     }
 
 
@@ -37,12 +44,18 @@ public class Initializer : MonoBehaviour
         _gravityController = new GravityController(_gameSettings.gravitySettings);
         _gravityObjectSpawner = new GravityObjectSpawner
             (_gravityController, _gameSettings.prefab,_gameSettings.spawnPositions);
+
+        foreach (var gravityObject in _sceneGravityObjects)
+        {
+            _gravityController.AddGravityObject(gravityObject);
+        }
+        
     }
     
     private void InitGameController()
     {
         _gameController = new GameController
-            (_gravityController, _gravityObjectSpawner, _gameSettings);
+            (_gravityObjectSpawner, _gameSettings);
         _gameController.Init();
     }
     

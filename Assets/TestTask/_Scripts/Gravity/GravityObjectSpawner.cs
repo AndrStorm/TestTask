@@ -18,6 +18,7 @@ public class GravityObjectSpawner
         _objCounter = 0;
     }
 
+    
     public void SpawnGravityObjects(int quantity)
     {
         for (int i = 1; i <= quantity; i++)
@@ -30,9 +31,9 @@ public class GravityObjectSpawner
             obj.gameObject.name += _objCounter;
             _gravityController.AddGravityObject(obj);
         }
-        
     }
 
+    
     private Vector3 ChooseSpawnPosition()
     {
         if (_objCounter < 0) return Vector3.zero;

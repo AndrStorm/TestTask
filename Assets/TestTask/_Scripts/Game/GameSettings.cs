@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class GameSettings
 {
     public GravityObject prefab;
-    public int startSpawnGravityObjectsQuanity = 2;
+    public int GravityObjectsStartSpawn = 2;
     public List<SpawnPosition> spawnPositions;
     public GravitySettings gravitySettings;
     
